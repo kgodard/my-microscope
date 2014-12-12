@@ -10,4 +10,14 @@ Router.route '/posts/:_id',
   data: -> Posts.findOne(@params._id)
 Router.route '/submit', {name: 'postSubmit'}
 
+requireLogin = ->
+  if not Meteor.user()
+    if Meteor.loggingIn()
+      @render @loadingTemplate
+    else
+      @render 'accessDenied'
+  else
+    @next()
+
 Router.onBeforeAction 'dataNotFound', {only: 'postPage'}
+Router.onBeforeAction requireLogin, {only: 'postSubmit'}
